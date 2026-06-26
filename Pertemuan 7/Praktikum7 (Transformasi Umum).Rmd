@@ -1,0 +1,206 @@
+---
+title: "Praktikum 7 (Tranformasi Umum)"
+author: "Fido Ahmad"
+output:
+  rmdformats::readthedown
+---
+
+
+# Pola Parabola
+
+
+## Pola parabola dengan B2 > 0
+
+```{r}
+library(ggplot2)
+x<-seq(1:50)
+set.seed(1)
+e<-runif(n=50,min=-500,max=2000)
+y<- 1 + (2.3*x) + (5*x^2)+e
+ggplot()+
+  geom_point(aes(x=x, y=y),col="purple")+
+  labs(title = "Scatterplot peubah X dan Y")
+```
+
+
+
+
+## Transformasi y diperkecil
+
+```{r}
+akar_y<-sqrt(y)
+dtrans1<-data.frame(x,akar_y)
+ggplot(data = dtrans1)+
+  geom_point(aes(x=x, y=akar_y),col="purple")+
+  labs(title = "Transformasi memperkecil Y")
+```
+
+
+
+
+## Transformasi x diperbesar
+
+```{r}
+x_kuadrat<-x^2
+dtrans2<-data.frame(x_kuadrat,y)
+ggplot(data = dtrans2)+
+  geom_point(aes(x=x_kuadrat, y=y),col="purple")+
+  labs(title = "Transformasi memperbesar X")
+```
+
+
+
+
+# Pola Hiperbola
+
+```{r}
+x1<-x
+set.seed(1)
+e1<-runif(50, min =-0.01, max=0.01)
+y1<-(x1/(1.2+2*x1))+e1
+
+ggplot()+
+  geom_point(aes(x=x1, y=y1),col="blue")+
+  labs(title = "Scatterplot y1 terhadap x1")
+```
+
+
+
+
+## Transformasi y=1/y1 dan x=1/x1
+
+```{r}
+ggplot()+
+  geom_point(aes(x=1/x1, y=1/y1),col="blue")+
+  labs(title = "Scatterplot 1/y1 terhadap 1/x1")
+```
+
+
+
+
+# Pola Eksplonensial
+
+```{r}
+x2<-x
+set.seed(1)
+e2<-runif(50, min = 0, max = 15)
+y2<-(1.2*exp(0.1*x))+e2
+
+ggplot()+
+  geom_point(aes(x=x2, y=y2),col="red")+
+  labs(title = "Scatterplot y2 terhadap x2")
+```
+
+
+
+
+## Transformasi y=ln(y2)
+
+```{r}
+ggplot()+
+  geom_point(aes(x=x2, y=log(y2)),col="red")+
+  labs(title = "Scatterplot ln(y2) terhadap x2")
+```
+
+
+
+
+# Pola Pangkat
+
+```{r}
+x3<-x
+set.seed(1)
+e3<-runif(50, min =0, max=10000)
+y3<-1.3*(x^3.5)
+
+ggplot()+
+  geom_point(aes(x=x3, y=y3),col="coral")+
+  labs(title = "Scatterplot y3 terhadap x3")
+```
+
+
+
+
+## Transformasi y=ln(y3), x=ln(x3)
+
+```{r}
+ggplot()+
+  geom_point(aes(x=log(x3), y=log(y3)),col="coral")+
+  labs(title = "Scatterplot ln(y3) terhadap ln(x3")
+```
+
+
+
+
+# Pola Kebalikan Eksplonensial
+
+```{r}
+x4<-x
+set.seed(1)
+e4<-runif(50, min = 0, max = 0.02)
+y4<-(1.2*exp(0.1/x))+e4
+
+ggplot()+
+  geom_point(aes(x=x4, y=y4),col="brown")+
+  labs(title = "Scatterplot y4 terhadap x4")
+```
+
+
+
+
+## Transformasi y=ln(y4) terhadap 1/x4
+
+```{r}
+ggplot()+
+  geom_point(aes(x=1/x4, y=log(y4)),col="brown")+
+  labs(title = "Scatterplot ln(y4) terhadap 1/x4")
+```
+
+
+
+
+# Contoh Penerapan Model dari Pola Eksponensial
+
+```{r}
+a <- 2
+b <- 3
+x <- rnorm(1000,50,1.5)
+error <- rnorm(1000,5,5)
+```
+
+Persamaan eksponensial: \(Y=\alpha e^\beta x\)
+
+```{r}
+y <- a*exp(b*x)+error
+plot(x,y)
+```
+
+
+
+Transformasinya kedua ruas di-ln-kan \(Y^*=ln(Y)\)
+
+```{r}
+y_tr <- log(y)
+datakita <- data.frame(cbind(y_tr,x))
+head(datakita)
+```
+
+```{r}
+model_tr <- lm(y_tr~x, datakita)
+summary(model_tr)
+```
+
+Implikasi dari transformasi kedua ruas, maka \(\beta_0=ln(a)\) dan \(\beta_1=b\)
+
+```{r}
+b0 <- model_tr$coefficients[[1]]
+b1 <- model_tr$coefficients[[2]]
+b0; b1
+```
+
+Mengecek apakah nilai a hasil transformasi balik sudah sesuai dengan nilai a yang asli. Karena \(\beta_0=ln(a)\), maka \(a=e^{\beta_0}\)
+
+```{r}
+(a_duga <- exp(b0))
+```
+
